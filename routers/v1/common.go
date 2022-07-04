@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SetCommonRoutes(rg *gin.RouterGroup) {
+func SetCommonControllerRoutes(rg *gin.RouterGroup) {
 	commonGroup := rg.Group("/common")
 	commonGroup.GET("/ping", middleware.CustomMiddleware(), commonController.PingPongHandler)
 }

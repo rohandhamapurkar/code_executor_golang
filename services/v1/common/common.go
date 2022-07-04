@@ -1,7 +1,7 @@
 package common
 
-import "fmt"
+import "log"
 
 func TestFunctionForPrinting() {
-	fmt.Println("This is a test service function")
+	log.Println("This is a test service function")
 }

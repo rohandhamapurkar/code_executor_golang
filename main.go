@@ -1,10 +1,11 @@
 package main
 
 import (
-	"fmt"
+	"log"
 	"net/http"
-	"rohandhamapurkar/code-executor/core/config"
+	appConfig "rohandhamapurkar/code-executor/core/config"
 	v1 "rohandhamapurkar/code-executor/routers/v1"
+	"rohandhamapurkar/code-executor/services/v1/aws"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,12 +13,13 @@ import (
 var router *gin.Engine
 
 func init() {
-	config.Init()
+	appConfig.Init()
+	aws.InitClients()
 	router = gin.Default()
 	v1.SetV1Routes(router)
 }
 
 func main() {
-	fmt.Println("Server Running on: ", config.AppConfig.Host+":"+config.AppConfig.Port)
-	http.ListenAndServe(config.AppConfig.Host+":"+config.AppConfig.Port, router)
+	log.Println("Server Running on: ", appConfig.Host+":"+appConfig.Port)
+	http.ListenAndServe(appConfig.Host+":"+appConfig.Port, router)
 }

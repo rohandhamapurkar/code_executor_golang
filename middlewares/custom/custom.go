@@ -1,7 +1,7 @@
 package common
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +10,7 @@ import (
 func CustomMiddleware() gin.HandlerFunc {
 	// Perform initialization here...
 	return func(ctx *gin.Context) {
-		fmt.Println("I'm a middleware :)")
+		log.Println("I'm a middleware :)")
 		ctx.Next()
 	}
 }

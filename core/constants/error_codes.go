@@ -1,0 +1,6 @@
+package constants
+
+const (
+	ERROR_INVALID_REQUEST_BODY = "ERROR_INVALID_REQUEST_BODY"
+	USER_REG_FAILED            = "USER_REG_FAILED"
+)

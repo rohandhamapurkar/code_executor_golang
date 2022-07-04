@@ -10,12 +10,12 @@ import (
 )
 
 // to store the app env variables
-var AppConfig *appConfig
-
-type appConfig struct {
-	Port string
-	Host string
-}
+var Host string
+var Port string
+var AwsCognitoRegion string
+var AwsCognitoClientId string
+var AwsAccessKeyId string
+var AwsSecretAccessKey string
 
 // to load the env variables from .env
 func Init() {
@@ -32,10 +32,13 @@ func Init() {
 		log.Fatal(fmt.Sprintf("Error loading .env.%s file", *appMode))
 	}
 
-	AppConfig = &appConfig{
-		Host: os.Getenv("HOST"),
-		Port: os.Getenv("PORT"),
-	}
+	Host = os.Getenv("HOST")
+	Port = os.Getenv("PORT")
+
+	AwsCognitoRegion = os.Getenv("AWS_COGNITO_REGION")
+	AwsCognitoClientId = os.Getenv("AWS_COGNITO_CLIENT_ID")
+	AwsAccessKeyId = os.Getenv("AWS_ACCESS_KEY_ID")
+	AwsSecretAccessKey = os.Getenv("AWS_SECRET_ACCESS_KEY")
 
 }
 
