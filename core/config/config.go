@@ -16,6 +16,7 @@ var AwsCognitoRegion string
 var AwsCognitoClientId string
 var AwsAccessKeyId string
 var AwsSecretAccessKey string
+var PostgresDsn string
 
 // to load the env variables from .env
 func Init() {
@@ -39,6 +40,7 @@ func Init() {
 	AwsCognitoClientId = os.Getenv("AWS_COGNITO_CLIENT_ID")
 	AwsAccessKeyId = os.Getenv("AWS_ACCESS_KEY_ID")
 	AwsSecretAccessKey = os.Getenv("AWS_SECRET_ACCESS_KEY")
+	PostgresDsn = os.Getenv("POSTGRES_DSN")
 
 }
 

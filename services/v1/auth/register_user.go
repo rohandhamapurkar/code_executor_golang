@@ -1,13 +1,14 @@
 package auth
 
 import (
-	awsService "rohandhamapurkar/code-executor/services/v1/aws"
+	"rohandhamapurkar/code-executor/core/structs"
 
 	"golang.org/x/crypto/bcrypt"
 )
 
-func RegisterUser(email *string, password *string) error {
-	passwordInBytes := []byte(*password)
+func RegisterUser(user *structs.UserRegReqBody) error {
+	// convert password to byte array
+	passwordInBytes := []byte(user.Password)
 
 	// Hashing the password with the default cost of 10
 	hashedPasswordInBytes, err := bcrypt.GenerateFromPassword(passwordInBytes, bcrypt.DefaultCost)
@@ -15,11 +16,8 @@ func RegisterUser(email *string, password *string) error {
 		return err
 	}
 
-	*password = string(hashedPasswordInBytes)
+	// convert hashpassword byte array back to string
+	user.Password = string(hashedPasswordInBytes)
 
-	err = awsService.SignUpUser(email, password)
-	if err != nil {
-		return err
-	}
 	return nil
 }
