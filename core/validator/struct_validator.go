@@ -8,7 +8,7 @@ type ErrorResponse struct {
 	Value       string
 }
 
-func ValidateStruct(dto interface{}) []*ErrorResponse {
+func validateStruct(dto interface{}) []*ErrorResponse {
 	validate := validator.New()
 	var errors []*ErrorResponse
 	err := validate.Struct(dto)

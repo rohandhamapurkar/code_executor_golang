@@ -9,4 +9,5 @@ import (
 func SetAuthControllerRoutes(rg *gin.RouterGroup) {
 	authGroup := rg.Group("/auth")
 	authGroup.POST("/register", authController.RegisterUserHandler)
+	authGroup.POST("/login", authController.LoginHandler)
 }

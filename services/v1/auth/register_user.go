@@ -1,23 +1,47 @@
 package auth
 
 import (
-	"rohandhamapurkar/code-executor/core/structs"
+	"errors"
+	"log"
 
-	"golang.org/x/crypto/bcrypt"
+	"rohandhamapurkar/code-executor/core/constants"
+	"rohandhamapurkar/code-executor/core/db"
+	"rohandhamapurkar/code-executor/core/models"
+	"rohandhamapurkar/code-executor/core/structs"
+	crypto "rohandhamapurkar/code-executor/libs/crypto"
 )
 
-func RegisterUser(user *structs.UserRegReqBody) error {
-	// convert password to byte array
-	passwordInBytes := []byte(user.Password)
+// inserts the user into database and then returns access token
+func RegisterUser(body *structs.RegUserReqBody) (string, error) {
 
-	// Hashing the password with the default cost of 10
-	hashedPasswordInBytes, err := bcrypt.GenerateFromPassword(passwordInBytes, bcrypt.DefaultCost)
+	// get hashed password
+	hashedPassword, err := crypto.EncryptPasswordString(body.Password)
 	if err != nil {
-		return err
+		log.Println(err)
+		return "", errors.New(constants.ERROR_PWD_HASH_FAILED)
 	}
 
-	// convert hashpassword byte array back to string
-	user.Password = string(hashedPasswordInBytes)
+	body.Password = hashedPassword
 
-	return nil
+	// create user model struct
+	user := &models.User{Email: body.Email, Password: body.Password, Name: body.Name}
+
+	// insert row into users table
+	result := db.Postgres.Create(user)
+
+	if result.Error != nil {
+		log.Println(err)
+		return "", errors.New(constants.ERROR_USER_INSERTION_FAILED)
+	}
+
+	// create jwt token
+	jwtString, err := CreateJwtToken(user)
+	if err != nil {
+		log.Println(err)
+		return "", errors.New(constants.ERROR_JWT_TOKEN_CREATION)
+	}
+
+	// return jwt access token string
+	return jwtString, nil
+
 }

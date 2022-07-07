@@ -1,5 +1,7 @@
 package constants
 
 const (
-	ERROR_USER_REG_SERVICE_UNAVAILABLE = "User registration service unavailable."
+	ERROR_PWD_HASH_FAILED       = "Password hash failed."
+	ERROR_USER_INSERTION_FAILED = "User could not be inserted into the database."
+	ERROR_JWT_TOKEN_CREATION    = "Could not create JWT token."
 )
