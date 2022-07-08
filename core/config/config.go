@@ -14,7 +14,11 @@ import (
 var Host string
 var Port string
 var PostgresDsn string
+var AwsCognitoRegion string
+var AwsCognitoPoolId string
+var AwsCognitoClientId string
 var AwsCognitoJwksUrl string
+var AwsCognitoIssuer string
 var AwsCognitoJwks *structs.JWK
 
 // to load the env variables from .env
@@ -36,7 +40,11 @@ func Init() {
 	Port = os.Getenv("PORT")
 
 	PostgresDsn = os.Getenv("POSTGRES_DSN")
-	AwsCognitoJwksUrl = os.Getenv("AWS_COGNITO_JWKS_URL")
+	AwsCognitoRegion = os.Getenv("AWS_COGNITO_REGION")
+	AwsCognitoPoolId = os.Getenv("AWS_COGNITO_POOL_ID")
+	AwsCognitoClientId = os.Getenv("AWS_COGNITO_CLIENT_ID")
+	AwsCognitoIssuer = fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s", AwsCognitoRegion, AwsCognitoPoolId)
+	AwsCognitoJwksUrl = fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json", AwsCognitoRegion, AwsCognitoPoolId)
 
 }
 

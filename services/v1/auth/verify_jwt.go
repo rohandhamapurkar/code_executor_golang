@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"encoding/binary"
 	"encoding/json"
+	"errors"
 	"io/ioutil"
 	"log"
 	"math/big"
@@ -37,17 +38,47 @@ func convertKey(rawE, rawN string) *rsa.PublicKey {
 	return pubKey
 }
 
-func DecodeAndVerifyJwtToken(tokenString string) (*jwt.Token, error) {
+func DecodeAndVerifyJwtToken(tokenString string) (*structs.JWTClaims, error) {
 	token, err := jwt.Parse(tokenString, func(*jwt.Token) (interface{}, error) {
 		key := convertKey(config.AwsCognitoJwks.Keys[1].E, config.AwsCognitoJwks.Keys[1].N)
 		return key, nil
 	})
 
 	if err != nil {
-		return token, err
+		return &structs.JWTClaims{}, err
 	}
 
-	return token, nil
+	err = token.Claims.Valid()
+	if err != nil {
+		return &structs.JWTClaims{}, err
+	}
+
+	claims := &structs.JWTClaims{
+		AuthTime: token.Claims.(jwt.MapClaims)["auth_time"].(float64),
+		ClientId: token.Claims.(jwt.MapClaims)["client_id"].(string),
+		Exp:      token.Claims.(jwt.MapClaims)["exp"].(float64),
+		Iat:      token.Claims.(jwt.MapClaims)["iat"].(float64),
+		Iss:      token.Claims.(jwt.MapClaims)["iss"].(string),
+		Jti:      token.Claims.(jwt.MapClaims)["jti"].(string),
+		Scope:    token.Claims.(jwt.MapClaims)["scope"].(string),
+		Sub:      token.Claims.(jwt.MapClaims)["sub"].(string),
+		TokenUse: token.Claims.(jwt.MapClaims)["token_use"].(string),
+		Username: token.Claims.(jwt.MapClaims)["username"].(string),
+		Version:  token.Claims.(jwt.MapClaims)["version"].(float64),
+	}
+
+	if claims.ClientId != config.AwsCognitoClientId {
+		return &structs.JWTClaims{}, errors.New("Invalid Client Id")
+	}
+
+	if claims.Iss != config.AwsCognitoIssuer {
+		return &structs.JWTClaims{}, errors.New("Invalid Issuer")
+	}
+	if claims.TokenUse != "access" {
+		return &structs.JWTClaims{}, errors.New("Invalid Token Use")
+	}
+
+	return claims, nil
 }
 
 func CacheJWK() error {
