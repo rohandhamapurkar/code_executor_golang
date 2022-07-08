@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"rohandhamapurkar/code-executor/core/structs"
 
 	"github.com/joho/godotenv"
 )
@@ -13,7 +14,8 @@ import (
 var Host string
 var Port string
 var PostgresDsn string
-var JwtSecret string
+var AwsCognitoJwksUrl string
+var AwsCognitoJwks *structs.JWK
 
 // to load the env variables from .env
 func Init() {
@@ -34,7 +36,7 @@ func Init() {
 	Port = os.Getenv("PORT")
 
 	PostgresDsn = os.Getenv("POSTGRES_DSN")
-	JwtSecret = os.Getenv("JWT_SECRET")
+	AwsCognitoJwksUrl = os.Getenv("AWS_COGNITO_JWKS_URL")
 
 }
 

@@ -1,20 +1,18 @@
 package validator
 
-import "github.com/go-playground/validator/v10"
+import (
+	"rohandhamapurkar/code-executor/core/structs"
 
-type ErrorResponse struct {
-	FailedField string
-	Tag         string
-	Value       string
-}
+	"github.com/go-playground/validator/v10"
+)
 
-func validateStruct(dto interface{}) []*ErrorResponse {
+func validateStruct(dto interface{}) []*structs.ErrorResponse {
 	validate := validator.New()
-	var errors []*ErrorResponse
+	var errors []*structs.ErrorResponse
 	err := validate.Struct(dto)
 	if err != nil {
 		for _, err := range err.(validator.ValidationErrors) {
-			var element ErrorResponse
+			var element structs.ErrorResponse
 			element.FailedField = err.StructNamespace()
 			element.Tag = err.Tag()
 			element.Value = err.Param()
