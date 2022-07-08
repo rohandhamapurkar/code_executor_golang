@@ -6,7 +6,6 @@ import (
 	appConfig "rohandhamapurkar/code-executor/core/config"
 	"rohandhamapurkar/code-executor/core/db"
 	v1 "rohandhamapurkar/code-executor/routers/v1"
-	authService "rohandhamapurkar/code-executor/services/v1/auth"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,10 +15,6 @@ var router *gin.Engine
 func init() {
 	appConfig.Init()
 	db.InitPostgresDBConn()
-	err := authService.CacheJWK()
-	if err != nil {
-		log.Fatalln("Could not cache AWS Cognito jwks")
-	}
 	router = gin.Default()
 	v1.SetV1Routes(router)
 }
