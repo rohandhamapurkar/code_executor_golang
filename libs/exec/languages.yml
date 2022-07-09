@@ -1,0 +1,10 @@
+languages:
+  - language: NodeJS v14
+    version: 14.20.0
+    cmd: "node"
+  - language: Python 3
+    version: 3.10.0
+    cmd: "python3"
+  - language: Java 15.0.2
+    version: 15.0.2
+    cmd: "java"
