@@ -1,4 +1,4 @@
-FROM golang:1.18
+FROM --platform=linux/amd64 golang:1.18 
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -20,12 +20,10 @@ RUN apt-get update && \
 
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
-COPY build.sh build.sh
-
-RUN bash build.sh
-
-COPY exec.go exec.go
-COPY run.sh run.sh
+COPY libs/exec exec
+RUN chmod +x exec/build.sh
+RUN chmod +x exec/run.sh
+RUN exec/build.sh
 
 
 # docker build -t golang_container:latest .
