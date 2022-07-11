@@ -18,8 +18,7 @@ func IsLoggedIn() gin.HandlerFunc {
 
 		// if no token string found then
 		if authorization == "" {
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": constants.INVALID_TOKEN, "message": constants.MISSING_AUTH_TOKEN})
-			ctx.Abort()
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": constants.INVALID_TOKEN, "message": constants.MISSING_AUTH_TOKEN})
 			return
 		}
 
@@ -27,8 +26,7 @@ func IsLoggedIn() gin.HandlerFunc {
 		jwtClaims, err := auth.DecodeAndVerifyJwtToken(authorization)
 		if err != nil {
 			log.Println(err)
-			ctx.JSON(http.StatusUnauthorized, gin.H{"error": constants.INVALID_TOKEN, "message": constants.INVALID_TOKEN})
-			ctx.Abort()
+			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": constants.INVALID_TOKEN, "message": constants.INVALID_TOKEN})
 			return
 		}
 

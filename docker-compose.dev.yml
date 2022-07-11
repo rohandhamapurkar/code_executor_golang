@@ -1,5 +1,12 @@
 services:
+  app:
+    container_name: app
+    build:
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./tmp:/tmp
   db:
+    container_name: db
     image: postgres
     environment:
       - POSTGRES_USER=postgres
@@ -7,10 +14,10 @@ services:
       - POSTGRES_DB=code_executor_db
       - PGDATA=/var/lib/postgresql/data/pgdata
     volumes:
-      - C:/data/postgresql/data:/var/lib/postgresql/data
-    ports:
-      - 5432:5432
+      - ~/postgresql_data:/var/lib/postgresql/data
+      # - C:/data/postgresql/data:/var/lib/postgresql/data
   db_admin:
+    container_name: db_admin
     image: dpage/pgadmin4
     environment:
       - PGADMIN_DEFAULT_EMAIL=admin@example.com
@@ -18,3 +25,7 @@ services:
       - PGADMIN_LISTEN_PORT=80
     ports:
       - 8080:80
+
+networks:
+  default:
+    name: ce

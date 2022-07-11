@@ -1,7 +1,6 @@
 # install languages binaries
 
 mkdir -p /tmp/pkg/
-mkdir -p /tmp/
 
 # install NodeJS v14.20.0
 BUILD_FOLDER_NAME=node_v14.20.0
@@ -16,22 +15,22 @@ echo "PATH=/tmp/pkg/$BUILD_FOLDER_NAME/bin:$PATH" >> /tmp/pkg/$BUILD_FOLDER_NAME
 
 
 # install Python 3.10.0
-BUILD_FOLDER_NAME=python_v3.10.0
-PKG_NAME=Python-3.10.0.tgz
-PKG_SOURCE=https://www.python.org/ftp/python/3.10.0/$PKG_NAME
-mkdir -p /tmp/pkg/$BUILD_FOLDER_NAME
-wget $PKG_SOURCE -P /tmp
-tar xzf /tmp/$PKG_NAME --strip-components=1 --directory=/tmp/pkg/$BUILD_FOLDER_NAME
-rm /tmp/$PKG_NAME
-cd /tmp/pkg/$BUILD_FOLDER_NAME
-PREFIX=$(realpath $(dirname .))
-./configure --prefix "$PREFIX" --with-ensurepip=install
-make -j$(nproc)
-make install -j$(nproc)
-rm -rf build
-echo "PATH=/tmp/pkg/$BUILD_FOLDER_NAME/bin:$PATH" >> /tmp/pkg/$BUILD_FOLDER_NAME/.env
-bin/pip3 install numpy scipy pandas bcrypt
-cd /tmp
+# BUILD_FOLDER_NAME=python_v3.10.0
+# PKG_NAME=Python-3.10.0.tgz
+# PKG_SOURCE=https://www.python.org/ftp/python/3.10.0/$PKG_NAME
+# mkdir -p /tmp/pkg/$BUILD_FOLDER_NAME
+# wget $PKG_SOURCE -P /tmp
+# tar xzf /tmp/$PKG_NAME --strip-components=1 --directory=/tmp/pkg/$BUILD_FOLDER_NAME
+# rm /tmp/$PKG_NAME
+# cd /tmp/pkg/$BUILD_FOLDER_NAME
+# PREFIX=$(realpath $(dirname .))
+# ./configure --prefix "$PREFIX" --with-ensurepip=install
+# make -j$(nproc)
+# make install -j$(nproc)
+# rm -rf build
+# echo "PATH=/tmp/pkg/$BUILD_FOLDER_NAME/bin:$PATH" >> /tmp/pkg/$BUILD_FOLDER_NAME/.env
+# bin/pip3 install numpy scipy pandas bcrypt
+# cd /tmp
 
 
 

@@ -1,0 +1,10 @@
+NodeJS v14:
+  version: 14.20.0
+  src_folder: node_v14.20.0
+  extension: js
+  cmd: node
+Python 3:
+  version: 3.10.0
+  src_folder: python_v3.10.0
+  extension: py
+  cmd: python3

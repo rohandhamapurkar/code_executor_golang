@@ -14,6 +14,9 @@ import (
 var Host string
 var Port string
 var PostgresDsn string
+
+var LanguagePackagesDir string
+
 var AwsCognitoRegion string
 var AwsCognitoPoolId string
 var AwsCognitoClientId string
@@ -40,6 +43,8 @@ func Init() {
 	Port = os.Getenv("PORT")
 
 	PostgresDsn = os.Getenv("POSTGRES_DSN")
+
+	LanguagePackagesDir = os.Getenv("PKG_DIR_PATH")
 
 	AwsCognitoRegion = os.Getenv("AWS_COGNITO_REGION")
 	AwsCognitoPoolId = os.Getenv("AWS_COGNITO_POOL_ID")

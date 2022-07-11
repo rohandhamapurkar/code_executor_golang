@@ -6,7 +6,9 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/go-playground/validator/v10 v10.11.0
 	github.com/golang-jwt/jwt/v4 v4.4.2
+	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
+	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/postgres v1.3.8
 	gorm.io/gorm v1.23.7
 )
@@ -39,5 +41,4 @@ require (
 	golang.org/x/sys v0.0.0-20220627191245-f75cf1eec38b // indirect
 	golang.org/x/text v0.3.7 // indirect
 	google.golang.org/protobuf v1.28.0 // indirect
-	gopkg.in/yaml.v2 v2.4.0 // indirect
 )

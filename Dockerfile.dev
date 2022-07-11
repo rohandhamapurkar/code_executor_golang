@@ -20,10 +20,18 @@ RUN apt-get update && \
 
 RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
-COPY libs/exec exec
-RUN chmod +x exec/build.sh
-RUN chmod +x exec/run.sh
-RUN exec/build.sh
+WORKDIR /code_executor_golang
+
+COPY . .
+RUN go mod download
+RUN ls -a
+RUN chmod +x build_pkgs.sh
+RUN chmod +x run_pkg.sh
+RUN bash build_pkgs.sh
+
+RUN go build -o code-executor
+
+CMD [ "./code-executor", "-mode", "dev" ]
 
 
 # docker build -t golang_container:latest .

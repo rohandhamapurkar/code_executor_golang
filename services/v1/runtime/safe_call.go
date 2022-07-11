@@ -1,8 +1,4 @@
-// exec_linux.go
-//go:build linux
-// +build linux
-
-package main
+package runtime
 
 import (
 	"bytes"
@@ -13,13 +9,12 @@ import (
 	"syscall"
 )
 
-func main() {
-
+func SafeCallLibrary() {
 	cmd := exec.Command("whoami")
 
 	var out bytes.Buffer
 	var errOut bytes.Buffer
-	cmd.Dir = "/go/exec/"
+	cmd.Dir = "/tmp/jobs/"
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Credential: &syscall.Credential{
 			Uid: 1001,
@@ -40,5 +35,4 @@ func main() {
 	}
 
 	fmt.Println(out.String())
-
 }
