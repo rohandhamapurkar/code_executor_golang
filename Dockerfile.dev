@@ -24,7 +24,6 @@ WORKDIR /code_executor_golang
 
 COPY . .
 RUN go mod download
-RUN ls -a
 RUN chmod +x build_pkgs.sh
 RUN chmod +x run_pkg.sh
 RUN bash build_pkgs.sh
