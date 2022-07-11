@@ -35,6 +35,7 @@ func Init() {
 	runnerUid = 0
 	runnerGid = 0
 
+	// TODO: remove after testing
 	if execId, err := primeExecution(packages["NodeJS v14"], "console.log('OK')"); err != nil {
 		log.Println("execId", execId)
 		log.Println(err)
