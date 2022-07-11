@@ -1,10 +1,13 @@
 services:
   app:
     container_name: app
-    build:
+    build: 
+      context: .
       dockerfile: Dockerfile.dev
     volumes:
       - ./tmp:/tmp
+    depends_on:
+      - db
   db:
     container_name: db
     image: postgres
@@ -25,7 +28,3 @@ services:
       - PGADMIN_LISTEN_PORT=80
     ports:
       - 8080:80
-
-networks:
-  default:
-    name: ce
