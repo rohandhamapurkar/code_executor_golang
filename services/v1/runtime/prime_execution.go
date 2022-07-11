@@ -10,17 +10,17 @@ import (
 	"github.com/google/uuid"
 )
 
-func chownR(path string, uid, gid int) error {
-	return filepath.Walk(path, func(name string, info os.FileInfo, err error) error {
-		if err == nil {
-			err = os.Chown(name, uid, gid)
-		}
-		return err
-	})
+type executionInfo struct {
+	Id  string
+	Uid uint32
+	Gid uint32
 }
 
-func primeExecution(lang pkgInfo, code string) (string, error) {
+func primeExecution(lang pkgInfo, code string) (executionInfo, error) {
 	execId := uuid.New().String()
+
+	uid := runnerUid
+	gid := runnerGid
 
 	// TODO: uncomment this
 	// tmpDir := os.TempDir() + execId
@@ -28,17 +28,17 @@ func primeExecution(lang pkgInfo, code string) (string, error) {
 
 	if err := os.Mkdir(tmpDir, 0644); err != nil {
 		log.Println(err)
-		return "", errors.New(constants.MKDIR_FAILED + ":" + execId)
+		return executionInfo{}, errors.New(constants.MKDIR_FAILED + ":" + execId)
 	}
 
-	if err := chownR(tmpDir, int(runnerUid), int(runnerGid)); err != nil {
+	if err := chownR(tmpDir, int(uid), int(gid)); err != nil {
 		log.Println(err)
-		return "", errors.New(constants.CANNOT_CHOWN_DIR + ":" + execId)
+		return executionInfo{}, errors.New(constants.CANNOT_CHOWN_DIR + ":" + execId)
 	}
 
 	if err := os.WriteFile(tmpDir+"/"+execId+"."+lang.Extension, []byte(code), 0444); err != nil {
 		log.Println(err)
-		return "", errors.New(constants.CANNOT_WRITE_FILE + ":" + execId)
+		return executionInfo{}, errors.New(constants.CANNOT_WRITE_FILE + ":" + execId)
 	}
 
 	// increment uid and gid
@@ -47,5 +47,14 @@ func primeExecution(lang pkgInfo, code string) (string, error) {
 	runnerUid %= 1500 - 1000 + 1
 	runnerGid %= 1500 - 1000 + 1
 
-	return execId, nil
+	return executionInfo{Id: execId, Uid: uid, Gid: gid}, nil
+}
+
+func chownR(path string, uid, gid int) error {
+	return filepath.Walk(path, func(name string, info os.FileInfo, err error) error {
+		if err == nil {
+			err = os.Chown(name, uid, gid)
+		}
+		return err
+	})
 }

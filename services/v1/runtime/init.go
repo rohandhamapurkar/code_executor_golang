@@ -17,8 +17,8 @@ type pkgInfo struct {
 
 var packages map[string]pkgInfo
 
-var runnerUid uint16
-var runnerGid uint16
+var runnerUid uint32
+var runnerGid uint32
 
 func Init() {
 	buf, err := ioutil.ReadFile("./languages.yml")
@@ -35,9 +35,4 @@ func Init() {
 	runnerUid = 0
 	runnerGid = 0
 
-	// TODO: remove after testing
-	if execId, err := primeExecution(packages["NodeJS v14"], "console.log('OK')"); err != nil {
-		log.Println("execId", execId)
-		log.Println(err)
-	}
 }

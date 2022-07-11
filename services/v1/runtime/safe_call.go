@@ -6,33 +6,68 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"rohandhamapurkar/code-executor/core/config"
+	"rohandhamapurkar/code-executor/core/structs"
 	"syscall"
 )
 
-func SafeCallLibrary() {
-	cmd := exec.Command("whoami")
+type CmdOutput struct {
+	StdOut string
+	StdErr string
+}
 
+func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
+	lang := packages[reqBody.Language]
+	log.Println("lang", lang)
+
+	execInfo, err := primeExecution(lang, reqBody.Code)
+	if err != nil {
+		log.Println(err)
+		return CmdOutput{}, err
+	}
+
+	// TODO: uncomment this
+	// tmpDir := os.TempDir() + execId
+	tmpDir := "/tmp/" + execInfo.Id
+	cmd := exec.Command("bash", "run_pkg.sh", lang.Cmd, tmpDir+"/"+execInfo.Id+"."+lang.Extension)
 	var out bytes.Buffer
 	var errOut bytes.Buffer
-	cmd.Dir = "/tmp/jobs/"
+
+	cmd.Dir = "."
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Credential: &syscall.Credential{
-			Uid: 1001,
-			Gid: 1001,
+			Uid:         execInfo.Uid,
+			Gid:         execInfo.Gid,
+			Groups:      nil,
+			NoSetGroups: true,
 		},
-		Pgid: 0,
+		Setsid: true,
 	}
+
+	envData, err := os.ReadFile(config.LanguagePackagesDir + "/" + lang.SrcFolder + "/" + ".env")
+	if err != nil {
+		log.Println(err)
+		return CmdOutput{}, err
+	}
+	log.Println("envData", envData)
+
 	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, "PATH=/tmp/pkg/node_v14.20.0/bin:/go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin")
+	cmd.Env = append(cmd.Env, string(envData))
+
 	cmd.Stdout = &out
 	cmd.Stderr = &errOut
 
-	err := cmd.Run()
+	err = cmd.Run()
 
 	if err != nil {
 		log.Println(err)
-		log.Fatalln(errOut.String())
+		log.Println(errOut.String())
 	}
 
 	fmt.Println(out.String())
+
+	return CmdOutput{
+		StdOut: out.String(),
+		StdErr: errOut.String(),
+	}, nil
 }
