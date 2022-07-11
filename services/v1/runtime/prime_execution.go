@@ -26,11 +26,18 @@ func primeExecution(lang pkgInfo, code string) (string, error) {
 	// tmpDir := os.TempDir() + execId
 	tmpDir := "/tmp/" + execId
 
+	if err := os.Mkdir(tmpDir, 0644); err != nil {
+		log.Println(err)
+		return "", errors.New(constants.MKDIR_FAILED + ":" + execId)
+	}
+
 	if err := chownR(tmpDir, int(runnerUid), int(runnerGid)); err != nil {
+		log.Println(err)
 		return "", errors.New(constants.CANNOT_CHOWN_DIR + ":" + execId)
 	}
 
 	if err := os.WriteFile(tmpDir+"/"+execId+"."+lang.Extension, []byte(code), 0444); err != nil {
+		log.Println(err)
 		return "", errors.New(constants.CANNOT_WRITE_FILE + ":" + execId)
 	}
 
@@ -39,10 +46,6 @@ func primeExecution(lang pkgInfo, code string) (string, error) {
 	runnerGid++
 	runnerUid %= 1500 - 1000 + 1
 	runnerGid %= 1500 - 1000 + 1
-
-	log.Println(runnerUid, runnerGid)
-
-	log.Println("execId", execId)
 
 	return execId, nil
 }
