@@ -6,9 +6,9 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"rohandhamapurkar/code-executor/core/config"
-	"rohandhamapurkar/code-executor/core/structs"
 	"syscall"
+
+	"rohandhamapurkar/code-executor/core/structs"
 )
 
 type CmdOutput struct {
@@ -17,42 +17,34 @@ type CmdOutput struct {
 }
 
 func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
-	lang := packages[reqBody.Language]
-	log.Println("lang", lang)
+	pkgInfo := packages[reqBody.Language]
 
-	execInfo, err := primeExecution(lang, reqBody.Code)
+	execInfo, err := primeExecution(pkgInfo, reqBody.Code)
 	if err != nil {
 		log.Println(err)
 		return CmdOutput{}, err
 	}
+	log.Println(execInfo)
 
-	// TODO: uncomment this
-	// tmpDir := os.TempDir() + execId
-	tmpDir := "/tmp/" + execInfo.Id
-	cmd := exec.Command("bash", "run_pkg.sh", lang.Cmd, tmpDir+"/"+execInfo.Id+"."+lang.Extension)
+	// tmpDir := os.TempDir() + "/" + execInfo.Id
+	tmpDir := os.TempDir() + "/" + execInfo.Id
+
+	cmd := exec.Command("bash", "run_pkg.sh", pkgInfo.Cmd, tmpDir+"/"+execInfo.Id+"."+pkgInfo.Extension)
 	var out bytes.Buffer
 	var errOut bytes.Buffer
 
 	cmd.Dir = "."
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Credential: &syscall.Credential{
-			Uid:         execInfo.Uid,
-			Gid:         execInfo.Gid,
-			Groups:      nil,
-			NoSetGroups: true,
+			Uid: execInfo.Uid,
+			Gid: execInfo.Gid,
 		},
-		Setsid: true,
+		Setsid:     true,
+		Foreground: false,
 	}
-
-	envData, err := os.ReadFile(config.LanguagePackagesDir + "/" + lang.SrcFolder + "/" + ".env")
-	if err != nil {
-		log.Println(err)
-		return CmdOutput{}, err
-	}
-	log.Println("envData", envData)
 
 	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, string(envData))
+	cmd.Env = append(cmd.Env, pkgInfo.EnvData)
 
 	cmd.Stdout = &out
 	cmd.Stderr = &errOut
