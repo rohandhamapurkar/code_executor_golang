@@ -40,8 +40,6 @@ func readFromOutPipe(result *[]byte, ioPipe io.ReadCloser) {
 
 func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 
-	defer cleanupProcesses()
-
 	pkgInfo := packages[reqBody.Language]
 
 	execInfo, err := primeExecution(pkgInfo, reqBody.Code)
@@ -49,6 +47,9 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 		log.Println(err)
 		return CmdOutput{}, err
 	}
+
+	defer cleanupProcesses(execInfo)
+	defer cleanupExecution(execInfo)
 
 	tmpDir := os.TempDir() + "/" + execInfo.Id
 
@@ -59,8 +60,8 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 			Uid: execInfo.Uid,
 			Gid: execInfo.Gid,
 		},
-		Setsid:     true,
-		Foreground: false,
+		Setpgid: true,
+		Pgid:    0,
 	}
 	cmd.Env = append(os.Environ(), pkgInfo.EnvData)
 
@@ -76,6 +77,9 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 		return CmdOutput{}, err
 	}
 
+	defer stdOutPipe.Close()
+	defer stdErrPipe.Close()
+
 	go readFromOutPipe(&stdOut, stdOutPipe)
 	go readFromOutPipe(&errOut, stdErrPipe)
 
@@ -86,11 +90,19 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 		}, err
 	}
 
-	log.Println("Executing: ", cmd.Process.Pid)
+	log.Println("Executing with pid: ", cmd.Process.Pid)
 
 	// 3 second timeout
 	timer := time.AfterFunc(time.Second*3, func() {
-		cmd.Process.Kill()
+		pgid, err := syscall.Getpgid(cmd.Process.Pid)
+		if err == nil {
+			log.Println("Killing parent", pgid)
+			if err := syscall.Kill(-pgid, syscall.SIGKILL); err != nil {
+				log.Println(err)
+			} else {
+				log.Println("Killed parent success", pgid)
+			}
+		}
 	})
 
 	if err = cmd.Wait(); err != nil {
