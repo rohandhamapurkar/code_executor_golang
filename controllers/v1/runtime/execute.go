@@ -28,7 +28,9 @@ func ExecuteCodeHandler(ctx *gin.Context) {
 		ctx.AbortWithStatusJSON(http.StatusInternalServerError,
 			gin.H{
 				"error":   constants.ERROR_EXECUTION_ERROR,
-				"message": constants.ERROR_WHILE_EXECUTING_CODE_SNIPPET,
+				"message": err.Error(),
+				"stdout":  output.StdOut,
+				"stderr":  output.StdErr,
 			})
 		return
 	}

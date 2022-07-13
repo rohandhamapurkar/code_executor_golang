@@ -29,7 +29,6 @@ func primeExecution(pkg pkgInfo, code string) (executionInfo, error) {
 		return executionInfo{}, errors.New(constants.MKDIR_FAILED + ":" + execId)
 	}
 
-	log.Println(uid, gid)
 	if err := chownR(tmpDir, int(uid), int(gid)); err != nil {
 		log.Println(err)
 		return executionInfo{}, errors.New(constants.CANNOT_CHOWN_DIR + ":" + execId)

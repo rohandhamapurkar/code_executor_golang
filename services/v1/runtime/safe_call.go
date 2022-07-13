@@ -1,12 +1,13 @@
 package runtime
 
 import (
-	"bytes"
-	"fmt"
+	"errors"
+	"io"
 	"log"
 	"os"
 	"os/exec"
 	"syscall"
+	"time"
 
 	"rohandhamapurkar/code-executor/core/structs"
 )
@@ -16,7 +17,31 @@ type CmdOutput struct {
 	StdErr string
 }
 
+func readFromOutPipe(result *[]byte, ioPipe io.ReadCloser) {
+	buf := make([]byte, 256)
+	for {
+		n, err := ioPipe.Read(buf)
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			log.Println(err)
+			break
+		}
+		if len(*result) >= 1024 {
+			msg := "\nOutput buffer limit execeeded..."
+			*result = append(*result, []byte(msg)...)
+			log.Println()
+			break
+		}
+		*result = append(*result, buf[:n]...)
+	}
+}
+
 func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
+
+	defer cleanupProcesses()
+
 	pkgInfo := packages[reqBody.Language]
 
 	execInfo, err := primeExecution(pkgInfo, reqBody.Code)
@@ -24,15 +49,10 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 		log.Println(err)
 		return CmdOutput{}, err
 	}
-	log.Println(execInfo)
 
-	// tmpDir := os.TempDir() + "/" + execInfo.Id
 	tmpDir := os.TempDir() + "/" + execInfo.Id
 
 	cmd := exec.Command("bash", "run_pkg.sh", pkgInfo.Cmd, tmpDir+"/"+execInfo.Id+"."+pkgInfo.Extension)
-	var out bytes.Buffer
-	var errOut bytes.Buffer
-
 	cmd.Dir = "."
 	cmd.SysProcAttr = &syscall.SysProcAttr{
 		Credential: &syscall.Credential{
@@ -42,24 +62,56 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 		Setsid:     true,
 		Foreground: false,
 	}
+	cmd.Env = append(os.Environ(), pkgInfo.EnvData)
 
-	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, pkgInfo.EnvData)
+	stdOut := []byte{}
+	errOut := []byte{}
 
-	cmd.Stdout = &out
-	cmd.Stderr = &errOut
-
-	err = cmd.Run()
-
+	stdOutPipe, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Println(err)
-		log.Println(errOut.String())
+		return CmdOutput{}, err
+	}
+	stdErrPipe, err := cmd.StderrPipe()
+	if err != nil {
+		return CmdOutput{}, err
 	}
 
-	fmt.Println(out.String())
+	go readFromOutPipe(&stdOut, stdOutPipe)
+	go readFromOutPipe(&errOut, stdErrPipe)
+
+	if err = cmd.Start(); err != nil {
+		return CmdOutput{
+			StdOut: string(stdOut),
+			StdErr: string(errOut),
+		}, err
+	}
+
+	log.Println("Executing: ", cmd.Process.Pid)
+
+	// 3 second timeout
+	timer := time.AfterFunc(time.Second*3, func() {
+		cmd.Process.Kill()
+	})
+
+	if err = cmd.Wait(); err != nil {
+		timer.Stop()
+		// if SIGKILL
+		if err.Error() == "signal: killed" {
+			return CmdOutput{}, errors.New("Execution Timeout exceeded")
+		}
+		// if other error
+		return CmdOutput{
+			StdOut: string(stdOut),
+			StdErr: string(errOut),
+		}, err
+	} else {
+		timer.Stop()
+	}
+
+	log.Println(len(stdOut))
 
 	return CmdOutput{
-		StdOut: out.String(),
-		StdErr: errOut.String(),
+		StdOut: string(stdOut),
+		StdErr: string(errOut),
 	}, nil
 }
