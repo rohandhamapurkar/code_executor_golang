@@ -10,6 +10,8 @@ import (
 	"time"
 
 	"rohandhamapurkar/code-executor/core/structs"
+
+	"golang.org/x/sys/unix"
 )
 
 type CmdOutput struct {
@@ -48,14 +50,13 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 		return CmdOutput{}, err
 	}
 
-	defer cleanupProcesses(execInfo)
 	defer cleanupExecution(execInfo)
 
 	tmpDir := os.TempDir() + "/" + execInfo.Id
 
 	cmd := exec.Command("bash", "run_pkg.sh", pkgInfo.Cmd, tmpDir+"/"+execInfo.Id+"."+pkgInfo.Extension)
 	cmd.Dir = "."
-	cmd.SysProcAttr = &syscall.SysProcAttr{
+	cmd.SysProcAttr = &unix.SysProcAttr{
 		Credential: &syscall.Credential{
 			Uid: execInfo.Uid,
 			Gid: execInfo.Gid,
@@ -94,15 +95,8 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 
 	// 3 second timeout
 	timer := time.AfterFunc(time.Second*3, func() {
-		pgid, err := syscall.Getpgid(cmd.Process.Pid)
-		if err == nil {
-			log.Println("Killing parent", pgid)
-			if err := syscall.Kill(-pgid, syscall.SIGKILL); err != nil {
-				log.Println(err)
-			} else {
-				log.Println("Killed parent success", pgid)
-			}
-		}
+		log.Println("Timeout exceeded, commencing Killings.")
+		cmd.Process.Kill()
 	})
 
 	if err = cmd.Wait(); err != nil {

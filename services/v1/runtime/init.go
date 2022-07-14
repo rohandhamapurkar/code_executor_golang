@@ -5,8 +5,10 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"os/signal"
 	"rohandhamapurkar/code-executor/core/config"
 
+	"golang.org/x/sys/unix"
 	"gopkg.in/yaml.v2"
 )
 
@@ -53,6 +55,16 @@ func Init() {
 			log.Fatalln(errors.New("Could not assign env: " + element.Language))
 		}
 	}
+
+	err = unix.Prctl(unix.PR_SET_CHILD_SUBREAPER, uintptr(1), 0, 0, 0)
+	if err != nil {
+		log.Println("Prctl err", err)
+	}
+
+	sigs := make(chan os.Signal)
+	signal.Notify(sigs, unix.SIGCHLD)
+
+	go cleanupProcesses(sigs)
 
 	// intialize runner uid and gid
 	runnerIncrementUid = 0
