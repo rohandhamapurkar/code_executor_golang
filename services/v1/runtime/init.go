@@ -26,10 +26,10 @@ var packages map[string]pkgInfo
 var runnerIncrementUid uint32
 var runnerIncrementGid uint32
 
-var minRunnerUid = 1001
-var minRunnerGid = 1001
-var maxRunnerUid = 1500
-var maxRunnerGid = 1500
+var minRunnerUid int
+var minRunnerGid int
+var maxRunnerUid int
+var maxRunnerGid int
 
 func Init() {
 	buf, err := ioutil.ReadFile("./languages.yml")
@@ -69,5 +69,10 @@ func Init() {
 	// intialize runner uid and gid
 	runnerIncrementUid = 0
 	runnerIncrementGid = 0
+
+	minRunnerUid = config.RuntimeMinRunnerUid
+	maxRunnerUid = config.RuntimeMaxRunnerUid
+	minRunnerGid = config.RuntimeMinRunnerGid
+	maxRunnerGid = config.RuntimeMaxRunnerGid
 
 }

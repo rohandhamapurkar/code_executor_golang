@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 
 	"github.com/joho/godotenv"
 )
@@ -23,6 +24,15 @@ var AwsCognitoClientId string
 var AwsCognitoJwksUrl string
 var AwsCognitoIssuer string
 var AwsCognitoJwtCachedPublicKey *rsa.PublicKey
+
+var RuntimeMinRunnerUid int
+var RuntimeMaxRunnerUid int
+var RuntimeMinRunnerGid int
+var RuntimeMaxRunnerGid int
+var RuntimeMaxProcessCount int
+var RuntimeMaxOpenFiles int
+var RuntimeMaxFileSize int
+var RuntimeMaxMemoryLimit int
 
 // to load the env variables from .env
 func Init() {
@@ -46,6 +56,15 @@ func Init() {
 
 	LanguagePackagesDir = os.Getenv("PKG_DIR_PATH")
 
+	RuntimeMinRunnerUid = parseInt(os.Getenv("RUNTIME_MIN_RUNNER_UID"))
+	RuntimeMaxRunnerUid = parseInt(os.Getenv("RUNTIME_MAX_RUNNER_UID"))
+	RuntimeMinRunnerGid = parseInt(os.Getenv("RUNTIME_MIN_RUNNER_GID"))
+	RuntimeMaxRunnerGid = parseInt(os.Getenv("RUNTIME_MAX_RUNNER_GID"))
+	RuntimeMaxProcessCount = parseInt(os.Getenv("RUNTIME_MAX_PROCESS_COUNT"))
+	RuntimeMaxOpenFiles = parseInt(os.Getenv("RUNTIME_MAX_OPEN_FILES"))
+	RuntimeMaxFileSize = parseInt(os.Getenv("RUNTIME_MAX_FILE_SIZE"))
+	RuntimeMaxMemoryLimit = parseInt(os.Getenv("RUNTIME_MAX_MEMORY_LIMIT"))
+
 	AwsCognitoRegion = os.Getenv("AWS_COGNITO_REGION")
 	AwsCognitoPoolId = os.Getenv("AWS_COGNITO_POOL_ID")
 	AwsCognitoClientId = os.Getenv("AWS_COGNITO_CLIENT_ID")
@@ -59,6 +78,15 @@ func Init() {
 		log.Println("Cached AWS Cognito jwks")
 	}
 
+}
+
+func parseInt(str string) int {
+	parsedInt, err := strconv.Atoi(str)
+	if err != nil {
+		log.Println("Error while parsing", str)
+		log.Fatalln(err)
+	}
+	return parsedInt
 }
 
 func contains(s []string, e *string) bool {

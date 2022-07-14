@@ -2,6 +2,7 @@ package runtime
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"rohandhamapurkar/code-executor/core/config"
 	"rohandhamapurkar/code-executor/core/structs"
 
 	"golang.org/x/sys/unix"
@@ -54,7 +56,22 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 
 	tmpDir := os.TempDir() + "/" + execInfo.Id
 
-	cmd := exec.Command("bash", "run_pkg.sh", pkgInfo.Cmd, tmpDir+"/"+execInfo.Id+"."+pkgInfo.Extension)
+	cmdArgs := []string{
+		"/usr/bin/nice",
+		"/usr/bin/prlimit",
+		fmt.Sprintf("--nproc=%d", config.RuntimeMaxProcessCount),
+		fmt.Sprintf("--nofile=%d", config.RuntimeMaxOpenFiles),
+		fmt.Sprintf("--fsize=%d", config.RuntimeMaxFileSize),
+		// fmt.Sprintf("--as=%d", config.RuntimeMaxMemoryLimit),
+		"/bin/bash",
+		"./run_pkg.sh",
+		pkgInfo.Cmd,
+		tmpDir + "/" + execInfo.Id + "." + pkgInfo.Extension,
+	}
+
+	log.Println(cmdArgs)
+
+	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 	cmd.Dir = "."
 	cmd.SysProcAttr = &unix.SysProcAttr{
 		Credential: &syscall.Credential{
