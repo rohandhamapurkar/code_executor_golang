@@ -72,10 +72,10 @@ func cleanupProcesses(signals chan os.Signal) {
 						}
 						process.Kill()
 					}
-					log.Println("pid:", procId)
-					log.Println("uid:", info.Ruid, info.Euid)
-					log.Println("gid:", info.Gid)
-					log.Println("state:", info.State)
+					// log.Println("pid:", procId)
+					// log.Println("uid:", info.Ruid, info.Euid)
+					// log.Println("gid:", info.Gid)
+					// log.Println("state:", info.State)
 				} else {
 					log.Println("pid:", procId, "Not my process")
 					continue

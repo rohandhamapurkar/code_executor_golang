@@ -44,7 +44,7 @@ func readFromOutPipe(result *[]byte, ioPipe io.ReadCloser) {
 
 func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 
-	pkgInfo := packages[reqBody.Language]
+	pkgInfo := Packages[reqBody.Language]
 
 	execInfo, err := primeExecution(pkgInfo, reqBody.Code)
 	if err != nil {
@@ -69,7 +69,7 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 		tmpDir + "/" + execInfo.Id + "." + pkgInfo.Extension,
 	}
 
-	log.Println(cmdArgs)
+	// log.Println(cmdArgs)
 
 	cmd := exec.Command(cmdArgs[0], cmdArgs[1:]...)
 	cmd.Dir = "."
@@ -130,8 +130,6 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 	} else {
 		timer.Stop()
 	}
-
-	log.Println(len(stdOut))
 
 	return CmdOutput{
 		StdOut: string(stdOut),

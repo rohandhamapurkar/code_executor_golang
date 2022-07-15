@@ -13,7 +13,6 @@ import (
 )
 
 type pkgInfo struct {
-	Language  string
 	Version   string
 	Extension string
 	EnvData   string
@@ -21,7 +20,15 @@ type pkgInfo struct {
 	Cmd       string
 }
 
-var packages map[string]pkgInfo
+type language struct {
+	Language  string `json:"language"`
+	Version   string `json:"version"`
+	Extension string `json:"extension"`
+}
+
+var Packages map[string]pkgInfo
+
+var PackagesJSON *[]language
 
 var runnerIncrementUid uint32
 var runnerIncrementGid uint32
@@ -37,22 +44,29 @@ func Init() {
 		log.Fatalln(err)
 	}
 
-	err = yaml.Unmarshal(buf, &packages)
+	err = yaml.Unmarshal(buf, &Packages)
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	for key, element := range packages {
+	PackagesJSON = &[]language{}
+
+	for key, element := range Packages {
+
 		pkgEnv, err := os.ReadFile(config.LanguagePackagesDir + "/" + element.SrcFolder + "/" + ".env")
+
 		if err != nil {
-			log.Println("Error while loading pkg env for", element.Language)
+			log.Println("Error while loading pkg env for", key)
 			log.Fatalln(err)
 		}
-		if entry, ok := packages[key]; ok {
+		*PackagesJSON = append(*PackagesJSON, language{Language: key, Version: element.Version, Extension: element.Extension})
+
+		if entry, ok := Packages[key]; ok {
+			log.Println(entry)
 			entry.EnvData = string(pkgEnv)
-			packages[key] = entry
+			Packages[key] = entry
 		} else {
-			log.Fatalln(errors.New("Could not assign env: " + element.Language))
+			log.Fatalln(errors.New("Could not assign env: " + key))
 		}
 	}
 

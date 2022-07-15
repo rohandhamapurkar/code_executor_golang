@@ -8,6 +8,7 @@ import (
 )
 
 func SetRuntimeControllerRoutes(rg *gin.RouterGroup) {
-	commonGroup := rg.Group("/runtime")
-	commonGroup.POST("/execute", authMiddleware.IsLoggedIn(), runtimeController.ExecuteCodeHandler)
+	runtimeGroup := rg.Group("/runtime")
+	runtimeGroup.POST("/execute", authMiddleware.IsLoggedIn(), runtimeController.ExecuteCodeHandler)
+	runtimeGroup.GET("/supported-languages", authMiddleware.IsLoggedIn(), runtimeController.GetSupportedLanguages)
 }
