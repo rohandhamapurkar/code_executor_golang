@@ -9,6 +9,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/joho/godotenv v1.4.0
 	golang.org/x/sys v0.0.0-20220712014510-0a85c31ab51e
+	golang.org/x/time v0.0.0-20220609170525-579cf78fd858
 	gopkg.in/yaml.v2 v2.4.0
 	gorm.io/driver/postgres v1.3.8
 	gorm.io/gorm v1.23.7
