@@ -13,7 +13,7 @@ type CreateSnippetReqBody struct {
 }
 
 type UpdateSnippetReqBody struct {
-	ID       uint   `json:"ID" validate:"required"`
+	ID       uint   `json:"id" validate:"required"`
 	Name     string `json:"name" validate:"omitempty"`
 	Language string `json:"language" validate:"omitempty"`
 	Code     string `json:"code" validate:"omitempty"`
@@ -21,5 +21,5 @@ type UpdateSnippetReqBody struct {
 }
 
 type DeleteSnippetReqBody struct {
-	ID uint `json:"ID" validate:"required"`
+	ID uint `json:"id" validate:"required"`
 }

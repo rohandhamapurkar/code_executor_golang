@@ -1,29 +1,26 @@
 package snippets
 
 import (
+	"rohandhamapurkar/code-executor/core/db"
+	"rohandhamapurkar/code-executor/core/models"
 	"rohandhamapurkar/code-executor/core/structs"
+	"rohandhamapurkar/code-executor/core/utils"
 )
-
-type updateQuery struct {
-	Name     string
-	Language string
-	Code     string
-	Public   bool
-}
 
 func UpdateSnippet(reqBody *structs.UpdateSnippetReqBody, userID string) error {
 
-	// update := &updateQuery{
-	// 	Name:     reqBody.Name,
-	// 	Language: reqBody.Language,
-	// 	Code:     reqBody.Code,
-	// }
+	update := map[string]interface{}{
+		"Name":     reqBody.Name,
+		"Language": reqBody.Language,
+		"Code":     reqBody.Code,
+		"Public":   reqBody.Public,
+	}
+	utils.BuildUpdateQuery(update)
 
-	// snippet := &models.Snippets{}
-	// snippet.ID = reqBody.ID
-	// snippet.UserID = userID
-	// result := db.Postgres.Model(snippet).UpdateColumns()
-	// return result.Error
+	snippet := &models.Snippets{}
+	snippet.ID = reqBody.ID
+	snippet.UserID = userID
+	result := db.Postgres.Model(snippet).UpdateColumns(update)
+	return result.Error
 
-	return nil
 }
