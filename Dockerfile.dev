@@ -22,16 +22,12 @@ RUN sed -i '/en_US.UTF-8/s/^# //g' /etc/locale.gen && locale-gen
 
 WORKDIR /code_executor_golang
 
-COPY . .
-RUN go mod download
+COPY build_pkgs.sh build_pkgs.sh
+COPY run_pkg.sh run_pkg.sh
 RUN chmod +x build_pkgs.sh
 RUN chmod +x run_pkg.sh
 RUN bash build_pkgs.sh
+COPY languages.yml languages.yml
+COPY code-executor code-executor
 
-RUN go build -o code-executor
-
-CMD [ "./code-executor", "-mode", "dev" ]
-
-
-# docker build -t golang_container:latest .
-# docker run --name golang --rm -i -t golang_container /bin/bash
+CMD [ "./code-executor" ]
