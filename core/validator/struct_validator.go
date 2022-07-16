@@ -15,7 +15,8 @@ func validateStruct(dto interface{}) []*structs.ErrorResponse {
 			var element structs.ErrorResponse
 			element.FailedField = err.StructNamespace()
 			element.Tag = err.Tag()
-			element.Value = err.Param()
+			element.ParamRecv = err.Param()
+			element.ValueRecv = err.Value()
 			errors = append(errors, &element)
 		}
 	}

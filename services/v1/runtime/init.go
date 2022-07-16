@@ -62,7 +62,6 @@ func Init() {
 		*PackagesJSON = append(*PackagesJSON, language{Language: key, Version: element.Version, Extension: element.Extension})
 
 		if entry, ok := Packages[key]; ok {
-			log.Println(entry)
 			entry.EnvData = string(pkgEnv)
 			Packages[key] = entry
 		} else {

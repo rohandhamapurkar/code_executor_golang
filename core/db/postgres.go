@@ -25,6 +25,6 @@ func InitPostgresDBConn() {
 }
 
 func initPostgresSchema() {
-	Postgres.AutoMigrate(&models.User{})
+	Postgres.AutoMigrate(&models.Snippets{})
 	log.Println("Initialized Postgres schema.")
 }

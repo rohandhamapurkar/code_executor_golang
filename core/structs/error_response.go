@@ -1,7 +1,8 @@
 package structs
 
 type ErrorResponse struct {
-	FailedField string
-	Tag         string
-	Value       string
+	FailedField string      `json:"failedField"`
+	Tag         string      `json:"tag"`
+	ParamRecv   string      `json:"paramRecv"`
+	ValueRecv   interface{} `json:"valueRecv"`
 }

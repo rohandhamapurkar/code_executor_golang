@@ -6,4 +6,5 @@ func SetV1Routes(router *gin.Engine) {
 	v1RouterGroup := router.Group("/v1")
 	SetCommonControllerRoutes(v1RouterGroup)
 	SetRuntimeControllerRoutes(v1RouterGroup)
+	SetSnippetsControllerRoutes(v1RouterGroup)
 }
