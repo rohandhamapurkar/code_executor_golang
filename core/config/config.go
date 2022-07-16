@@ -19,8 +19,8 @@ var PostgresDsn string
 var LanguagePackagesDir string
 
 var AwsCognitoRegion string
-var AwsCognitoPoolId string
-var AwsCognitoClientId string
+var AwsCognitoPoolID string
+var AwsCognitoClientID string
 var AwsCognitoJwksUrl string
 var AwsCognitoIssuer string
 var AwsCognitoJwtCachedPublicKey *rsa.PublicKey
@@ -66,10 +66,10 @@ func Init() {
 	RuntimeMaxMemoryLimit = parseInt(os.Getenv("RUNTIME_MAX_MEMORY_LIMIT"))
 
 	AwsCognitoRegion = os.Getenv("AWS_COGNITO_REGION")
-	AwsCognitoPoolId = os.Getenv("AWS_COGNITO_POOL_ID")
-	AwsCognitoClientId = os.Getenv("AWS_COGNITO_CLIENT_ID")
-	AwsCognitoIssuer = fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s", AwsCognitoRegion, AwsCognitoPoolId)
-	AwsCognitoJwksUrl = fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json", AwsCognitoRegion, AwsCognitoPoolId)
+	AwsCognitoPoolID = os.Getenv("AWS_COGNITO_POOL_ID")
+	AwsCognitoClientID = os.Getenv("AWS_COGNITO_CLIENT_ID")
+	AwsCognitoIssuer = fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s", AwsCognitoRegion, AwsCognitoPoolID)
+	AwsCognitoJwksUrl = fmt.Sprintf("https://cognito-idp.%s.amazonaws.com/%s/.well-known/jwks.json", AwsCognitoRegion, AwsCognitoPoolID)
 
 	AwsCognitoJwtCachedPublicKey, err = cacheAWSCognitoJWK()
 	if err != nil {

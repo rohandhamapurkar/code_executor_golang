@@ -11,37 +11,37 @@ import (
 )
 
 type executionInfo struct {
-	Id  string
+	ID  string
 	Uid uint32
 	Gid uint32
 }
 
 func primeExecution(pkg pkgInfo, code string) (executionInfo, error) {
-	execId := uuid.New().String()
+	execID := uuid.New().String()
 
 	uid := minRunnerUid + int(runnerIncrementUid)
 	gid := minRunnerGid + int(runnerIncrementGid)
 
-	tmpDir := os.TempDir() + "/" + execId
+	tmpDir := os.TempDir() + "/" + execID
 
 	if err := os.Mkdir(tmpDir, 0700); err != nil {
 		log.Println(err)
-		return executionInfo{}, errors.New(constants.MKDIR_FAILED + ":" + execId)
+		return executionInfo{}, errors.New(constants.MKDIR_FAILED + ":" + execID)
 	}
 
 	if err := chownR(tmpDir, int(uid), int(gid)); err != nil {
 		log.Println(err)
-		return executionInfo{}, errors.New(constants.CANNOT_CHOWN_DIR + ":" + execId)
+		return executionInfo{}, errors.New(constants.CANNOT_CHOWN_DIR + ":" + execID)
 	}
 
-	if err := os.WriteFile(tmpDir+"/"+execId+"."+pkg.Extension, []byte(code), 0700); err != nil {
+	if err := os.WriteFile(tmpDir+"/"+execID+"."+pkg.Extension, []byte(code), 0700); err != nil {
 		log.Println(err)
-		return executionInfo{}, errors.New(constants.CANNOT_WRITE_FILE + ":" + execId)
+		return executionInfo{}, errors.New(constants.CANNOT_WRITE_FILE + ":" + execID)
 	}
 
 	if err := chownR(tmpDir, int(uid), int(gid)); err != nil {
 		log.Println(err)
-		return executionInfo{}, errors.New(constants.CANNOT_CHOWN_DIR + ":" + execId)
+		return executionInfo{}, errors.New(constants.CANNOT_CHOWN_DIR + ":" + execID)
 	}
 
 	// increment uid and gid
@@ -50,7 +50,7 @@ func primeExecution(pkg pkgInfo, code string) (executionInfo, error) {
 	runnerIncrementUid %= uint32(maxRunnerUid - minRunnerUid + 1)
 	runnerIncrementGid %= uint32(maxRunnerGid - minRunnerGid + 1)
 
-	return executionInfo{Id: execId, Uid: uint32(uid), Gid: uint32(gid)}, nil
+	return executionInfo{ID: execID, Uid: uint32(uid), Gid: uint32(gid)}, nil
 }
 
 func chownR(path string, uid, gid int) error {

@@ -54,7 +54,7 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 
 	defer cleanupExecution(execInfo)
 
-	tmpDir := os.TempDir() + "/" + execInfo.Id
+	tmpDir := os.TempDir() + "/" + execInfo.ID
 
 	cmdArgs := []string{
 		"/usr/bin/nice",
@@ -66,7 +66,7 @@ func SafeCallLibrary(reqBody *structs.ExecuteCodeReqBody) (CmdOutput, error) {
 		"/bin/bash",
 		"./run_pkg.sh",
 		pkgInfo.Cmd,
-		tmpDir + "/" + execInfo.Id + "." + pkgInfo.Extension,
+		tmpDir + "/" + execInfo.ID + "." + pkgInfo.Extension,
 	}
 
 	// log.Println(cmdArgs)

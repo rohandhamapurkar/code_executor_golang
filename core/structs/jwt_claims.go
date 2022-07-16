@@ -2,7 +2,7 @@ package structs
 
 type JWTClaims struct {
 	AuthTime float64
-	ClientId string
+	ClientID string
 	Exp      float64
 	Iat      float64
 	Iss      string

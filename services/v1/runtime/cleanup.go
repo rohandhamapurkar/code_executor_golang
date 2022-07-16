@@ -13,7 +13,7 @@ import (
 )
 
 func cleanupExecution(execInfo executionInfo) {
-	err := os.RemoveAll(os.TempDir() + "/" + execInfo.Id)
+	err := os.RemoveAll(os.TempDir() + "/" + execInfo.ID)
 	if err != nil {
 		log.Println("Recursive deletion err", err)
 	}
@@ -34,21 +34,21 @@ func cleanupProcesses(signals chan os.Signal) {
 
 			waitForPids := []int{}
 
-			processIds, err := ioutil.ReadDir("/proc")
+			processIDs, err := ioutil.ReadDir("/proc")
 			if err != nil {
 				log.Println(err)
 				return
 			}
 
-			for _, proc := range processIds {
+			for _, proc := range processIDs {
 				procName := proc.Name()
-				procId, err := strconv.Atoi(procName)
+				procID, err := strconv.Atoi(procName)
 				if err != nil {
 					continue
 				}
-				fmt.Println("procId", procId)
+				fmt.Println("procID", procID)
 
-				data, err := os.ReadFile(fmt.Sprintf("/proc/%d/status", procId))
+				data, err := os.ReadFile(fmt.Sprintf("/proc/%d/status", procID))
 				if err != nil {
 					log.Println(err)
 					continue
@@ -63,29 +63,29 @@ func cleanupProcesses(signals chan os.Signal) {
 				if info.Ruid >= minRunnerUid && info.Ruid <= maxRunnerUid && info.Euid >= minRunnerUid && info.Euid <= maxRunnerUid {
 
 					if info.State == "Z" {
-						waitForPids = append(waitForPids, procId)
+						waitForPids = append(waitForPids, procID)
 					} else {
-						process, err := os.FindProcess(procId)
+						process, err := os.FindProcess(procID)
 						if err != nil {
-							log.Println("Couldn't find process id:", procId, err)
+							log.Println("Couldn't find process id:", procID, err)
 							continue
 						}
 						process.Kill()
 					}
-					// log.Println("pid:", procId)
+					// log.Println("pid:", procID)
 					// log.Println("uid:", info.Ruid, info.Euid)
 					// log.Println("gid:", info.Gid)
 					// log.Println("state:", info.State)
 				} else {
-					log.Println("pid:", procId, "Not my process")
+					log.Println("pid:", procID, "Not my process")
 					continue
 				}
 			}
 
-			for _, procId := range waitForPids {
-				log.Println("waiting proc id", procId)
+			for _, procID := range waitForPids {
+				log.Println("waiting proc id", procID)
 				var status unix.WaitStatus
-				pid, err := unix.Wait4(procId, &status, unix.WNOHANG, nil)
+				pid, err := unix.Wait4(procID, &status, unix.WNOHANG, nil)
 				if err != nil {
 					log.Println("Wait err:", err)
 				}

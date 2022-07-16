@@ -24,7 +24,7 @@ func DecodeAndVerifyJwtToken(tokenString string) (*structs.JWTClaims, error) {
 
 	claims := &structs.JWTClaims{
 		AuthTime: token.Claims.(jwt.MapClaims)["auth_time"].(float64),
-		ClientId: token.Claims.(jwt.MapClaims)["client_id"].(string),
+		ClientID: token.Claims.(jwt.MapClaims)["client_id"].(string),
 		Exp:      token.Claims.(jwt.MapClaims)["exp"].(float64),
 		Iat:      token.Claims.(jwt.MapClaims)["iat"].(float64),
 		Iss:      token.Claims.(jwt.MapClaims)["iss"].(string),
@@ -36,8 +36,8 @@ func DecodeAndVerifyJwtToken(tokenString string) (*structs.JWTClaims, error) {
 		Version:  token.Claims.(jwt.MapClaims)["version"].(float64),
 	}
 
-	if claims.ClientId != config.AwsCognitoClientId {
-		return &structs.JWTClaims{}, errors.New("Invalid Client Id")
+	if claims.ClientID != config.AwsCognitoClientID {
+		return &structs.JWTClaims{}, errors.New("Invalid Client ID")
 	}
 
 	if claims.Iss != config.AwsCognitoIssuer {
