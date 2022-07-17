@@ -7,7 +7,6 @@ import (
 )
 
 func validateStruct(dto interface{}) []*structs.ErrorResponse {
-	validate := validator.New()
 	var errors []*structs.ErrorResponse
 	err := validate.Struct(dto)
 	if err != nil {
