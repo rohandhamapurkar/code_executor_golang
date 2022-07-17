@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/signal"
 	"rohandhamapurkar/code-executor/core/config"
+	"sync"
 
 	"golang.org/x/sys/unix"
 	"gopkg.in/yaml.v2"
@@ -30,6 +31,7 @@ var Packages map[string]pkgInfo
 
 var PackagesJSON *[]language
 
+var runnerIncrementMutex sync.Mutex
 var runnerIncrementUid uint32
 var runnerIncrementGid uint32
 

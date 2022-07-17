@@ -44,11 +44,13 @@ func primeExecution(pkg pkgInfo, code string) (executionInfo, error) {
 		return executionInfo{}, errors.New(constants.CANNOT_CHOWN_DIR + ":" + execID)
 	}
 
+	runnerIncrementMutex.Lock()
 	// increment uid and gid
 	runnerIncrementUid++
 	runnerIncrementGid++
 	runnerIncrementUid %= uint32(maxRunnerUid - minRunnerUid + 1)
 	runnerIncrementGid %= uint32(maxRunnerGid - minRunnerGid + 1)
+	runnerIncrementMutex.Unlock()
 
 	return executionInfo{ID: execID, Uid: uint32(uid), Gid: uint32(gid)}, nil
 }
