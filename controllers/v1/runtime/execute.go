@@ -17,11 +17,6 @@ func ExecuteCodeHandler(ctx *gin.Context) {
 		return
 	}
 
-	var userClaims *structs.JWTClaims
-	if userClaims = validator.GetRequestUserClaims(ctx); userClaims == nil {
-		return
-	}
-
 	output, err := runtimeService.SafeCallLibrary(body)
 	if err != nil {
 		log.Println(err)
