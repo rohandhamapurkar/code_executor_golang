@@ -28,7 +28,7 @@ jobs:
         uses: bots-house/ghcr-delete-image-action@v1.0.0
         with:
           owner: ${{ github.actor }}
-          name: code_executor_golang
+          name: ghcr.io/rohandhamapurkar/code_executor_golang
           token: ${{ secrets.GHCR_PAT }}
           tag: latest
 
