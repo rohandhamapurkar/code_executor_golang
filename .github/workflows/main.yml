@@ -24,13 +24,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_PAT }}
 
-      - name: Delete old latest image
-        uses: bots-house/ghcr-delete-image-action@v1.0.0
-        with:
-          owner: ${{ github.actor }}
-          name: code_executor_golang
-          token: ${{ secrets.GHCR_PAT }}
-          tag: latest
+      # - name: Delete old latest image
+      #   uses: bots-house/ghcr-delete-image-action@v1.0.0
+      #   with:
+      #     owner: ${{ github.actor }}
+      #     name: code_executor_golang
+      #     token: ${{ secrets.GHCR_PAT }}
+      #     tag: latest
 
       - name: Build image and push to Docker Hub
         uses: docker/build-push-action@v2
