@@ -56,7 +56,7 @@ func primeExecution(pkg pkgInfo, code string) (executionInfo, error) {
 }
 
 func chownR(path string, uid, gid int) error {
-	return filepath.Walk(path, func(name string, info os.FileInfo, err error) error {
+	return filepath.Walk(path, func(name string, _ os.FileInfo, err error) error {
 		if err == nil {
 			err = os.Chown(name, uid, gid)
 		}

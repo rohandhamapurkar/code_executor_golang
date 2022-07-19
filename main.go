@@ -4,11 +4,7 @@ import (
 	"log"
 	"net/http"
 	appConfig "rohandhamapurkar/code-executor/core/config"
-	"rohandhamapurkar/code-executor/core/db"
-	"rohandhamapurkar/code-executor/core/validator"
-	httpMiddleware "rohandhamapurkar/code-executor/middlewares/http"
 	v1 "rohandhamapurkar/code-executor/routers/v1"
-	runtimeService "rohandhamapurkar/code-executor/services/v1/runtime"
 
 	"github.com/gin-gonic/gin"
 )
@@ -16,11 +12,6 @@ import (
 var router *gin.Engine
 
 func init() {
-	appConfig.Init()
-	validator.Init()
-	db.InitPostgresDBConn()
-	runtimeService.Init()
-	go httpMiddleware.CleanupVisitors()
 	router = gin.Default()
 	v1.SetV1Routes(router)
 }

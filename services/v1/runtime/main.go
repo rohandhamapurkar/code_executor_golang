@@ -40,7 +40,8 @@ var minRunnerGid int
 var maxRunnerUid int
 var maxRunnerGid int
 
-func Init() {
+func init() {
+	defer log.Println("Initialized runtime service")
 	buf, err := ioutil.ReadFile("./languages.yml")
 	if err != nil {
 		log.Fatalln(err)

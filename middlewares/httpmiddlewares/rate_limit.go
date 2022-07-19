@@ -1,4 +1,4 @@
-package http
+package httpmiddlewares
 
 import (
 	"log"
@@ -21,7 +21,7 @@ type visitor struct {
 var visitors = make(map[string]*visitor)
 var mu sync.Mutex
 
-func CleanupVisitors() {
+func cleanupVisitors() {
 	for {
 		time.Sleep(time.Minute)
 

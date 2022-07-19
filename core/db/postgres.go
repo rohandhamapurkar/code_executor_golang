@@ -11,7 +11,7 @@ import (
 
 var Postgres *gorm.DB
 
-func InitPostgresDBConn() {
+func initPostgresDBConn() {
 	var err error
 	// Connect to database
 	Postgres, err = gorm.Open(postgres.Open(config.PostgresDsn), &gorm.Config{})
