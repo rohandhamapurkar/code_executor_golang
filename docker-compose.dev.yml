@@ -3,7 +3,7 @@ services:
     container_name: app
     build: 
       context: .
-      dockerfile: Dockerfile.web
+      dockerfile: Dockerfile.dev
     depends_on:
       - db
     ports:
